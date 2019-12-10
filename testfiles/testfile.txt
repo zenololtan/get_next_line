@@ -1,0 +1,8 @@
+The c programming language is the mother of all languages.
+It’s ideal for developing firmware or portable applications.
+Most of the students start their programming journey with the C language.
+In today’s world, every programmer who has achieved the top in IT field is very much familiar with the concept of C programming.
+In this article, we discuss Interesting Facts About C Language.
+The history of C programming language is quite interesting.
+Today, every computer literate person is familiar with the term “C Programming”.
+Let’s start in brief.
