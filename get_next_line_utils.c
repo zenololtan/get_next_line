@@ -5,8 +5,8 @@
 /*                                                     +:+                    */
 /*   By: ztan <ztan@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2019/12/05 16:37:44 by ztan           #+#    #+#                */
-/*   Updated: 2019/12/10 09:51:17 by ztan          ########   odam.nl         */
+/*   Created: 2019/12/16 18:21:40 by ztan           #+#    #+#                */
+/*   Updated: 2020/01/08 15:11:07 by ztan          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,56 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-char		*ft_strjoin(char *old, char *new)
+char	*line_break(const char *s, int c)
+{
+	size_t	i;
+	size_t	s_len;
+
+	if (!s)
+		return (NULL);
+	i = 0;
+	s_len = ft_strlen(s);
+	while (i <= (s_len))
+	{
+		if (s[i] == (char)c)
+			return ((char *)(s + i));
+		i++;
+	}
+	return (NULL);
+}
+
+char	*copy_line(char *s1, int chr)
+{
+	size_t	i;
+	size_t	size;
+	char	*dup;
+
+	i = 0;
+	size = 0;
+	if (!s1)
+		return (NULL);
+	while (s1[size] != chr && s1[size] != '\0')
+		size++;
+	dup = malloc(size + 1);
+	if (!dup)
+		return (NULL);
+	while (s1[i] != chr && s1[i] != '\0')
+	{
+		dup[i] = s1[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
+char	*ft_strjoin(char *old, char *new)
 {
 	char	*joined;
-	size_t	len_old;
-	size_t	len_new;
 	size_t	i;
-	len_old = ft_strlen(old);
-	len_new = ft_strlen(new);
-	joined = (char *)malloc(sizeof(char) * (len_old + len_new + 1));
+
+	if (!old)
+		old = "";
+	joined = malloc(sizeof(char) * (ft_strlen(old) + ft_strlen(new) + 1));
 	if (joined == NULL)
 		return (NULL);
 	i = 0;
@@ -47,55 +88,4 @@ char		*ft_strjoin(char *old, char *new)
 	}
 	joined[i] = '\0';
 	return (joined);
-}
-
-
-char	*ft_strdup(const char *s1)
-{
-	size_t	i;
-	char	*dup;
-
-	i = 0;
-	dup = malloc(ft_strlen(s1) + 1);
-	if (!dup)
-		return (NULL);
-	while (s1[i] != '\0')
-	{
-		dup[i] = s1[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
-}
-
-int		ft_strchr_mk1(const char *s, int c)
-{
-	int	i;
-	int	s_len;
-
-	i = 0;
-	s_len = ft_strlen(s);
-	while (i <= (s_len))
-	{
-		if (s[i] == c)
-			return (i);
-		i++;
-	}
-	return (0);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	int	i;
-	int	s_len;
-
-	i = 0;
-	s_len = ft_strlen(s);
-	while (i <= (s_len))
-	{
-		if (s[i] == (char)c)
-			return ((char *)(s + i));
-		i++;
-	}
-	return (0);
 }

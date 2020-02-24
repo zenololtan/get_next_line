@@ -5,62 +5,78 @@
 /*                                                     +:+                    */
 /*   By: ztan <ztan@student.codam.nl>                 +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2019/12/09 11:57:07 by ztan           #+#    #+#                */
-/*   Updated: 2019/12/09 18:57:28 by ztan          ########   odam.nl         */
+/*   Created: 2019/12/16 18:23:37 by ztan           #+#    #+#                */
+/*   Updated: 2020/01/08 15:15:21 by ztan          ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
+
+void	save_line(char **temp, char **tail, int fd)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	(*temp) = copy_line(tail[fd], '\n');
+	while (tail[fd][i] != '\n' && tail[fd][i] != '\0')
+		i++;
+	if (tail[fd][i] == '\0')
+	{
+		free(tail[fd]);
+		tail[fd] = NULL;
+		return ;
+	}
+	tmp = copy_line(tail[fd] + i + 1, '\0');
+	free(tail[fd]);
+	tail[fd] = tmp;
+}
+
+int		get_line(char **temp, char **tail, int fd)
+{
+	char		*buffer;
+	char		*tmp;
+	int			bytes_read;
+
+	while (!line_break(tail[fd], '\n'))
+	{
+		buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+        if (!buffer)
+            return (0);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read == -1)
+		{
+			free(buffer);
+			return (-1);
+		}
+		buffer[bytes_read] = '\0';
+		tmp = tail[fd];
+		tail[fd] = ft_strjoin(tail[fd], buffer);
+		free(tmp);
+		free(buffer);
+		if (bytes_read < 1)
+			break ;
+	}
+	save_line(temp, tail, fd);
+	return (0);
+}
 
 int		get_next_line(int fd, char **line)
 {
-	static char temp[BUFFER_SIZE + 1];
-	char *ret;
-	int val_read;
-	int res;
+	static char	*tail[FD_SIZE];
+	char		*temp;
+	int			flag;
 
-	ret = NULL;
-	ret = get_line(ret, temp, fd, val_read);
-	if (ret == NULL)
+	temp = NULL;
+	if (!line || fd < 0 || read(fd, 0, 0) == -1)
 		return (-1);
-//	printf("%s", ret);
-	*line = ret;
-	return (1);
-}
-
-char	*get_line(char *ret, char *temp, int fd, int val_read)
-{
-	char *temp2;
-	if (temp[0] == '\0')
-		val_read = read(fd, temp, BUFFER_SIZE);
-	if (val_read == -1)
-		return (NULL);
-//	printf("%s", temp);
-	if (!ret)
-	{
-//		printf("%s", temp);
-		ret = ft_strdup(temp);
-	}
-//	printf("%s", ret);
-	while (ft_strchr_mk1(temp, '\n') == 0)
-	{
-//		printf("lol");
-		val_read = read(fd, temp, BUFFER_SIZE);
-		if (val_read == -1)
-			return (NULL);
-		if (val_read && ft_strchr_mk1(temp, '\n') == 0)
-			ret = ft_strjoin(ret, temp);
-//		printf("%s", ret);
-	}
-//	printf("%s", ret);
-	if (ft_strchr_mk1(temp, '\n') != 0)
-	{// hieeeeeeer!!!!!!!!
-		temp2 = ft_strdup(temp);
-		temp2[!ft_strchr_mk1(temp2, '\n')] = '\0';
-		ft_strjoin(ret, temp2);
-		temp = (temp + ft_strchr_mk1(temp2, '\n'));
-	}
-//	printf("%s", ret);
-	return (ret);
+	flag = get_line(&temp, tail, fd);
+	if (flag == -1)
+		return (-1);
+	if (tail[fd] != NULL)
+		flag = 1;
+	else
+		flag = 0;
+	(*line) = temp;
+	return (flag);
 }
